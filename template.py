@@ -16,7 +16,7 @@ list_of_files = [
     f"src/{project_name}/utils/gen_functions.py",
     f"src/{project_name}/config/__init__.py",
     f"src/{project_name}/config/configuration.py",
-    f"src/{project_name}/pipline/__init__.py", ## All the training testing pipelines
+    f"src/{project_name}/pipeline/__init__.py", ## All the training testing pipelines
     f"src/{project_name}/entity/__init__.py",
     f"src/{project_name}/entity/config_entity.py", ## All the configuration details
     f"src/{project_name}/logging/__init__.py", ## All the custom Logges are tracked here

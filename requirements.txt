@@ -1,0 +1,8 @@
+python-dotenv
+pandas
+numpy 
+sqlalchemy
+certifi
+psycopg2-binary
+
+-e .
