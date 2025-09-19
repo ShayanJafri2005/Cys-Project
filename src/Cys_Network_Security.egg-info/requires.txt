@@ -1,8 +1,7 @@
 python-dotenv
 pandas
-numpy 
+numpy
 sqlalchemy
 certifi
 psycopg2-binary
 scikit-learn
--e .
