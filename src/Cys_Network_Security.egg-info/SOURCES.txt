@@ -4,11 +4,13 @@ src/CysProject/__init__.py
 src/CysProject/cloud/__init__.py
 src/CysProject/components/__init__.py
 src/CysProject/components/data_ingestion.py
+src/CysProject/components/data_validation.py
 src/CysProject/config/__init__.py
 src/CysProject/config/configuration.py
 src/CysProject/constants/__init__.py
 src/CysProject/constants/training_pipeline/__init__.py
 src/CysProject/entity/__init__.py
+src/CysProject/entity/artifact_entity.py
 src/CysProject/entity/config_entity.py
 src/CysProject/exception/__init__.py
 src/CysProject/exception/exception.py

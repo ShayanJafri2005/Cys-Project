@@ -5,3 +5,4 @@ sqlalchemy
 certifi
 psycopg2-binary
 scikit-learn
+pyaml

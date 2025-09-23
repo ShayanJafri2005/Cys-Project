@@ -1,6 +1,6 @@
 from src.CysProject.exception.exception import NetworkSecurityException
 from src.CysProject.logging.logger import logging
-from src.CysProject.entity.artifact_entitty import DataIngestionArtifact
+from CysProject.entity.artifact_entity import DataIngestionArtifact
 
 ## cofiguration of the data ingestion config 
 from src.CysProject.entity.config_entity import DataIngestionConfig

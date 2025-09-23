@@ -1,3 +1,24 @@
+# GENERAL TRAINING PIPELINE CONSTANTS
+
+# Target column (label)
+TARGET_COLUMN: str = "Result"
+
+# ML pipeline name
+PIPELINE_NAME: str = "NetworkSecurity"
+
+# Directory for storing pipeline artifacts
+ARTIFACT_DIR: str = "Artifacts"
+
+# Raw data file name (after ingestion/export from DB)
+FILE_NAME: str = "phisingData.csv"
+
+# Train/Test split file names
+TRAIN_FILE_NAME: str = "train.csv"
+TEST_FILE_NAME: str = "test.csv"
+
+SCHEMA_FILE_PATH: str = "schema.yaml"
+
+
 """
 Data Ingestion related constants.
 All constants start with DATA_INGESTION_ prefix.
@@ -18,20 +39,13 @@ DATA_INGESTION_INGESTED_DIR: str = "ingested"
 DATA_INGESTION_TRAIN_TEST_SPLIT_RATIO: float = 0.2 
 
 
-# GENERAL TRAINING PIPELINE CONSTANTS
+"""
+Data Validation related constant start with DATA_VALIDATION VAR NAME
+"""
 
-# Target column (label)
-TARGET_COLUMN: str = "Result"
+DATA_VALIDATION_DIR_NAME: str = "data_validation"
+DATA_VALIDATION_VALID_DIR: str = "validated"
+DATA_VALIDATION_INVALID_DIR: str = "invalid"
+DATA_VALIDATION_DRIFT_REPORT_DIR: str = "drift_report"
+DATA_VALIDATION_DRIFT_REPORT_FILE_NAME: str = "report.yaml"
 
-# ML pipeline name
-PIPELINE_NAME: str = "NetworkSecurity"
-
-# Directory for storing pipeline artifacts
-ARTIFACT_DIR: str = "Artifacts"
-
-# Raw data file name (after ingestion/export from DB)
-FILE_NAME: str = "phisingData.csv"
-
-# Train/Test split file names
-TRAIN_FILE_NAME: str = "train.csv"
-TEST_FILE_NAME: str = "test.csv"
