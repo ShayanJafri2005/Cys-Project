@@ -52,4 +52,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: shayanjafri67/cys-project:latest
+          tags: shayanjafri2005/cys-project:latest
