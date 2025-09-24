@@ -19,6 +19,8 @@ src/CysProject/exception/exception.py
 src/CysProject/logging/__init__.py
 src/CysProject/logging/logger.py
 src/CysProject/pipeline/__init__.py
+src/CysProject/pipeline/batch_prediction.py
+src/CysProject/pipeline/training_pipeline.py
 src/CysProject/utils/gen_functions.py
 src/Cys_Network_Security.egg-info/PKG-INFO
 src/Cys_Network_Security.egg-info/SOURCES.txt

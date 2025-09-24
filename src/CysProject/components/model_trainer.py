@@ -23,6 +23,9 @@ from sklearn.ensemble import(
 ) 
 from sklearn.svm import SVC
 
+import dagshub
+dagshub.init(repo_owner='shayanjafri67', repo_name='Cys-Project', mlflow=True)
+
 
 class ModelTrainer:
     def __init__(self,model_trainer_config:ModelTrainerConfig,
@@ -33,23 +36,23 @@ class ModelTrainer:
         except Exception as e:
             raise NetworkSecurityException(e,sys)
 
-    def track_mlflow(self,best_model,classification_train_metric):
-            try:
-                with mlflow.start_run():
-                    f1_score = classification_train_metric.f1_score
-                    precision_score = classification_train_metric.precision_score
-                    recall_score = classification_train_metric.recall_score
+    def track_mlflow(self, model_path, classification_metric):
+        """
+        Logs metrics and saved model file to MLflow
+        """
+        try:
+            with mlflow.start_run():
+                # log metrics
+                mlflow.log_metric("f1_score", classification_metric.f1_score)
+                mlflow.log_metric("precision_score", classification_metric.precision_score)
+                mlflow.log_metric("recall_score", classification_metric.recall_score)
 
-                    mlflow.log_metric("f1_score",f1_score)
-                    mlflow.log_metric("precision_score",precision_score)
-                    mlflow.log_metric("recall_score",recall_score)
+                # log model file as artifact
+                mlflow.log_artifact(model_path)
 
-                    mlflow.sklearn.log_model(best_model, "model")
+        except Exception as e:
+            raise NetworkSecurityException(e,sys)
 
-            except Exception as e:
-                raise NetworkSecurityException(e,sys)
-
-        
 
     def train_model(self,x_train,y_train,x_test,y_test):
         try:
@@ -73,11 +76,8 @@ class ModelTrainer:
                 "KNeighborsClassifier": {
                     "n_neighbors": [3,4 ],
                     "weights": ["uniform", "distance"],
-                   # "algorithm": ["auto", "ball_tree", "kd_tree", "brute"]
                 },
                 "DecisionTreeClassifier": {
-                   # "criterion": ["gini", "entropy"],
-                   # "splitter": ["best", "random"],
                     "max_depth": [None, 10, 20, 30],
                     "min_samples_split": [2, 5, 10],
                     "min_samples_leaf":  [1, 2, 4]
@@ -86,9 +86,6 @@ class ModelTrainer:
                     "n_estimators": [50, 100, 200],
                     "criterion": ["gini", "entropy"],
                     "max_depth": [None, 10, 20, 30],
-                 #   "min_samples_split": [2, 5, 10  ],
-                   # "min_samples_leaf": [1, 2,],
-                  #  "max_features": ["auto", "sqrt", "log2"]
                 },
                 "AdaBoostClassifier": {
                     "n_estimators": [50, 100, 200],
@@ -100,11 +97,8 @@ class ModelTrainer:
                     "max_depth": [3, 4, 5]
                 },
                 "ExtraTreesClassifier": {
-                    "n_estimators": [50, 100, 20],
-                   # "criterion": ["gini", "entropy"],
+                    "n_estimators": [50, 100, 200],
                     "max_depth": [None, 10, 20, 30],
-                   # "min_samples_split": [2, 5, 10],
-                  #  "min_samples_leaf": [1, 2, 4]
                 },
                 "SVC": {
                     "C": [0.1, 1, 10],
@@ -113,60 +107,74 @@ class ModelTrainer:
                 }
             }
             
-            model_report:dict = evaluate_models(X_train=x_train,y_train=y_train,
-                                                X_test=x_test,y_test=y_test,
-                                                models=models,param=params)
+            model_report:dict = evaluate_models(
+                X_train=x_train, y_train=y_train,
+                X_test=x_test, y_test=y_test,
+                models=models, param=params
+            )
             
-            ## To get best model score from dict
+            # Best model score
             best_model_score = max(sorted(model_report.values()))
 
-            ## To get best model name from dict
+            # Best model name
             best_model_name = list(model_report.keys())[
                 list(model_report.values()).index(best_model_score)
             ]
             best_model = models[best_model_name]
 
+            # Train metrics
             y_train_pred = best_model.predict(x_train)
-            classification_train_metric =get_classification_score(y_train,y_train_pred)
+            classification_train_metric = get_classification_score(y_train,y_train_pred)
 
-             ##  Mlflow Tracking for train metrics
-            self.track_mlflow(best_model,classification_train_metric)
-
-
+            # Test metrics
             y_test_pred = best_model.predict(x_test)
             classification_test_metric = get_classification_score(y_test,y_test_pred)
-             ##  Mlflow Tracking for test metrics
-            self.track_mlflow(best_model,classification_test_metric)
 
+            # Save full pipeline (preprocessor + model)
             preprocessor = load_object(file_path=self.data_transformation_artifact.transformed_object_file_path)
             model_dir_path = os.path.dirname(self.model_trainer_config.trained_model_file_path)
             os.makedirs(model_dir_path,exist_ok=True)
-            network_model = NetworkModel(preprocessor=preprocessor,model=best_model)
-            logging.info(f"Best found model on both training and testing dataset.")
-            save_object(file_path=self.model_trainer_config.trained_model_file_path,obj=network_model)
+            network_model = NetworkModel(preprocessor=preprocessor, model=best_model)
 
-            ## Model Trainer Artifact 
-            ModelTrainerArtifact(trained_model_file_path=self.model_trainer_config.trained_model_file_path,
-                                 train_metric_artifact=classification_train_metric,
-                                 test_metric_artifact=classification_test_metric)
-            logging.info(f"Model trainer artifact: {ModelTrainerArtifact} created")
-            return network_model
+            save_object(file_path=self.model_trainer_config.trained_model_file_path, obj=network_model)
+            logging.info(f"Best found model on both training and testing dataset.")
+            save_object("final_models/model.pkl",best_model)
+                        
+
+            # Log metrics & artifacts to MLflow
+            self.track_mlflow(
+                model_path=self.model_trainer_config.trained_model_file_path,
+                classification_metric=classification_train_metric
+            )
+            self.track_mlflow(
+                model_path=self.model_trainer_config.trained_model_file_path,
+                classification_metric=classification_test_metric
+            )
+
+            # Create artifact
+            model_trainer_artifact = ModelTrainerArtifact(
+                trained_model_file_path=self.model_trainer_config.trained_model_file_path,
+                train_metric_artifact=classification_train_metric,
+                test_metric_artifact=classification_test_metric
+            )
+            logging.info(f"Model trainer artifact created: {model_trainer_artifact}")
+            return model_trainer_artifact
 
         except Exception as e:
             raise NetworkSecurityException(e,sys)
 
 
-    def initate_model_trainer(self)->ModelTrainerArtifact:
+    def initiate_model_trainer(self)->ModelTrainerArtifact:
         try:
             logging.info("Loading transformed training dataset")
             train_file_path = self.data_transformation_artifact.transformed_train_file_path
             test_file_path = self.data_transformation_artifact.transformed_test_file_path
 
-            ##loading training and testing array 
+            # Load arrays
             train_arr = load_numpy_array_data(train_file_path)
             test_arr = load_numpy_array_data(test_file_path)
 
-            logging.info("Splitting input and target feature from both train and test arr")
+            logging.info("Splitting input and target features")
 
             x_train,y_train,x_test,y_test = (
                 train_arr[:,:-1],
@@ -176,9 +184,7 @@ class ModelTrainer:
             )
 
             model_trainer_artifact = self.train_model(x_train,y_train,x_test,y_test)
-
             return model_trainer_artifact
-
 
         except Exception as e:
             raise NetworkSecurityException(e,sys)
