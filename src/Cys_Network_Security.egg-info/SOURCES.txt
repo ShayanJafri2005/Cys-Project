@@ -4,7 +4,9 @@ src/CysProject/__init__.py
 src/CysProject/cloud/__init__.py
 src/CysProject/components/__init__.py
 src/CysProject/components/data_ingestion.py
+src/CysProject/components/data_transformation.py
 src/CysProject/components/data_validation.py
+src/CysProject/components/model_trainer.py
 src/CysProject/config/__init__.py
 src/CysProject/config/configuration.py
 src/CysProject/constants/__init__.py
@@ -17,7 +19,6 @@ src/CysProject/exception/exception.py
 src/CysProject/logging/__init__.py
 src/CysProject/logging/logger.py
 src/CysProject/pipeline/__init__.py
-src/CysProject/utils/__init__.py
 src/CysProject/utils/gen_functions.py
 src/Cys_Network_Security.egg-info/PKG-INFO
 src/Cys_Network_Security.egg-info/SOURCES.txt

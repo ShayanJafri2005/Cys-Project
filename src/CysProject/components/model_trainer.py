@@ -1,5 +1,6 @@
 import os
 import sys 
+import mlflow
 from src.CysProject.exception.exception import NetworkSecurityException
 from src.CysProject.logging.logger import logging
 
@@ -23,7 +24,6 @@ from sklearn.ensemble import(
 from sklearn.svm import SVC
 
 
-
 class ModelTrainer:
     def __init__(self,model_trainer_config:ModelTrainerConfig,
                  data_transformation_artifact:DataTransformationArtifact): 
@@ -32,6 +32,23 @@ class ModelTrainer:
             self.data_transformation_artifact = data_transformation_artifact
         except Exception as e:
             raise NetworkSecurityException(e,sys)
+
+    def track_mlflow(self,best_model,classification_train_metric):
+            try:
+                with mlflow.start_run():
+                    f1_score = classification_train_metric.f1_score
+                    precision_score = classification_train_metric.precision_score
+                    recall_score = classification_train_metric.recall_score
+
+                    mlflow.log_metric("f1_score",f1_score)
+                    mlflow.log_metric("precision_score",precision_score)
+                    mlflow.log_metric("recall_score",recall_score)
+
+                    mlflow.sklearn.log_model(best_model, "model")
+
+            except Exception as e:
+                raise NetworkSecurityException(e,sys)
+
         
 
     def train_model(self,x_train,y_train,x_test,y_test):
@@ -112,10 +129,14 @@ class ModelTrainer:
             y_train_pred = best_model.predict(x_train)
             classification_train_metric =get_classification_score(y_train,y_train_pred)
 
-             ##  We will write a function to track in mlflow next commit
+             ##  Mlflow Tracking for train metrics
+            self.track_mlflow(best_model,classification_train_metric)
+
 
             y_test_pred = best_model.predict(x_test)
             classification_test_metric = get_classification_score(y_test,y_test_pred)
+             ##  Mlflow Tracking for test metrics
+            self.track_mlflow(best_model,classification_test_metric)
 
             preprocessor = load_object(file_path=self.data_transformation_artifact.transformed_object_file_path)
             model_dir_path = os.path.dirname(self.model_trainer_config.trained_model_file_path)
@@ -154,9 +175,9 @@ class ModelTrainer:
                 test_arr[:,-1]
             )
 
-            model= self.train_model(x_train,y_train,x_test,y_test)
+            model_trainer_artifact = self.train_model(x_train,y_train,x_test,y_test)
 
-
+            return model_trainer_artifact
 
 
         except Exception as e:

@@ -11,6 +11,7 @@ Requires-Dist: certifi
 Requires-Dist: psycopg2-binary
 Requires-Dist: scikit-learn
 Requires-Dist: pyaml
+Requires-Dist: mlflow
 Dynamic: author
 Dynamic: author-email
 Dynamic: requires-dist

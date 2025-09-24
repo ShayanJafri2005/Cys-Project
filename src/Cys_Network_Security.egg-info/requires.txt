@@ -6,3 +6,4 @@ certifi
 psycopg2-binary
 scikit-learn
 pyaml
+mlflow

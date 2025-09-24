@@ -1,0 +1,14 @@
+artifact_uri: file:///D:/Projects/Cys-Project/mlruns/0/95a4719c58cd4b11a4da53cc623ec9c2/artifacts
+end_time: 1758713116773
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 95a4719c58cd4b11a4da53cc623ec9c2
+run_name: persistent-slug-331
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1758713113873
+status: 3
+tags: []
+user_id: shaya

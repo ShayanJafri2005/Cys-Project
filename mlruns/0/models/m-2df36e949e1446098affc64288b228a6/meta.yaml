@@ -1,0 +1,10 @@
+artifact_location: file:///D:/Projects/Cys-Project/mlruns/0/models/m-2df36e949e1446098affc64288b228a6/artifacts
+creation_timestamp: 1758713113981
+experiment_id: '0'
+last_updated_timestamp: 1758713116759
+model_id: m-2df36e949e1446098affc64288b228a6
+model_type: null
+name: model
+source_run_id: 95a4719c58cd4b11a4da53cc623ec9c2
+status: 2
+status_message: null
